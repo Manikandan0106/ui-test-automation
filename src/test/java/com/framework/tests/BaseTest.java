@@ -13,7 +13,6 @@ import io.qameta.allure.testng.AllureTestNg;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Listeners({ AllureTestNg.class })
 public class BaseTest {
     protected WebDriver driver;
     private static final Logger logger = LogManager.getLogger(BaseTest.class);
@@ -22,7 +21,7 @@ public class BaseTest {
     public void setUpAndLogin() {
         driver = DriverFactory.getDriver();
         driver.get(ConfigReader.get("URL"));
-        LoginPage.login(ConfigReader.get("USERNAME"), ConfigReader.get("PASSWORD"));
+        new LoginPage().login(ConfigReader.get("USERNAME"), ConfigReader.get("PASSWORD"));
     }
 
     @AfterMethod(alwaysRun = true)

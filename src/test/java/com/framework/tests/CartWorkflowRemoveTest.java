@@ -10,25 +10,25 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.testng.AllureTestNg;
 
-@Listeners({ AllureTestNg.class })
 @Epic("Cart Item Epic")
 public class CartWorkflowRemoveTest extends BaseTest {
 
 	@Test
 	@Description("JIRA-123:Test cart remove workflow functionality")
 	public void testCartWorkflow() throws InterruptedException {
+		CartWorkflowPage cartPage = new CartWorkflowPage();
 		Allure.step("Navigate to shopping cart", () -> {
-			CartWorkflowPage.goToCart();
+			cartPage.goToCart();
 		});
 
 		Allure.step("""
 				Click on Remove
 				         Expected: Cart item removed""", () -> {
-//			CartWorkflowPage.clickRemove();
+//			cartPage.clickRemove();
 		});
 
 		Allure.step(" Click on Continue Shoping", () -> {
-			CartWorkflowPage.clickContinueShopping();
+			cartPage.clickContinueShopping();
 		});
 	}
 }

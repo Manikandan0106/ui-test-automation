@@ -12,20 +12,19 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.StaleElementReferenceException;
 
 public class BasePage {
-    protected static final Logger logger = LogManager.getLogger(BasePage.class);
+    protected final Logger logger = LogManager.getLogger(getClass());
+    protected final WebDriver driver;
+    protected final WebDriverWait wait;
 
-    protected static WebDriver getDriver() {
-        return DriverFactory.getDriver();
+    public BasePage() {
+        this.driver = DriverFactory.getDriver();
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    protected static WebDriverWait getWait() {
-        return new WebDriverWait(getDriver(), Duration.ofSeconds(10));
-    }
-
-    protected static WebElement findElement(By locator, String elementName) {
+    protected WebElement findElement(By locator, String elementName) {
         try {
             logger.info("Finding element: " + elementName);
-            WebElement element = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+            WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
             logger.info("Element found: " + elementName);
             return element;
         } catch (Exception e) {
@@ -34,12 +33,12 @@ public class BasePage {
         }
     }
 
-    protected static void click(By locator, String elementName) {
+    protected void click(By locator, String elementName) {
         int attempts = 0;
         while (attempts < 2) {
             try {
                 logger.info("Clicking element: " + elementName);
-                WebElement element = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+                WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
                 element.click();
                 logger.info("Successfully clicked element: " + elementName);
                 return;
@@ -54,12 +53,12 @@ public class BasePage {
         throw new RuntimeException("Failed to click element after retry: " + elementName);
     }
 
-    protected static void enterText(By locator, String text, String elementName) {
+    protected void enterText(By locator, String text, String elementName) {
         int attempts = 0;
         while (attempts < 2) {
             try {
                 logger.info("Entering text in element: " + elementName + " - Text: " + text);
-                WebElement element = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+                WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
                 element.clear();
                 element.sendKeys(text);
                 logger.info("Successfully entered text in element: " + elementName);
@@ -75,12 +74,12 @@ public class BasePage {
         throw new RuntimeException("Failed to enter text after retry: " + elementName);
     }
 
-    protected static String getText(By locator, String elementName) {
+    protected String getText(By locator, String elementName) {
         int attempts = 0;
         while (attempts < 2) {
             try {
                 logger.info("Getting text from element: " + elementName);
-                WebElement element = getWait().until(ExpectedConditions.visibilityOfElementLocated(locator));
+                WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
                 String text = element.getText();
                 logger.info("Text retrieved from element: " + elementName + " - Text: " + text);
                 return text;
@@ -95,12 +94,12 @@ public class BasePage {
         throw new RuntimeException("Failed to get text after retry: " + elementName);
     }
 
-    protected static boolean isElementDisplayed(By locator, String elementName) {
+    protected boolean isElementDisplayed(By locator, String elementName) {
         int attempts = 0;
         while (attempts < 2) {
             try {
                 logger.info("Checking if element is displayed: " + elementName);
-                WebElement element = getWait().until(ExpectedConditions.visibilityOfElementLocated(locator));
+                WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
                 boolean isDisplayed = element.isDisplayed();
                 logger.info("Element display status: " + elementName + " - Displayed: " + isDisplayed);
                 return isDisplayed;
