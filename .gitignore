@@ -1,0 +1,48 @@
+# Maven build output
+/target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# Allure and test reports
+.allure/
+allure-results/
+test-output/
+surefire-reports/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment and secrets
+.env
+*.env
+*.secret
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# Chrome/Browser profiles
+/temp-chrome-profile/
+
+# JARs
+*.jar
+
+# Misc
+*.class 
