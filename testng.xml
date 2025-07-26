@@ -5,11 +5,14 @@
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
         <listener class-name="com.framework.listeners.AllureFailureLogger"/>
         <listener class-name="com.framework.listeners.InfluxDBListener"/>
+        <listener class-name="com.framework.listeners.RetryListener"/>
     </listeners>
     <test name="Test Cart Tests">
         <classes>
             <class name="com.framework.tests.CartWorkflowTest"/>
             <class name="com.framework.tests.CartWorkflowRemoveTest"/>
+            <class name="com.framework.tests.SimpleTest"/>
+            <class name="com.framework.tests.RetryTest"/>
         </classes>
     </test>
 </suite>

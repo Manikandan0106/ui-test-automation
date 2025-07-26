@@ -3,19 +3,15 @@ package com.framework.tests;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Listeners;
-
 import com.framework.pages.LoginPage;
-import com.framework.utils.ConfigBaseClass;
 import com.framework.utils.DriverFactory;
-
-import io.qameta.allure.testng.AllureTestNg;
+import com.framework.utils.ConfigBaseClass;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class BaseTest {
     protected WebDriver driver;
-    private static final Logger logger = LogManager.getLogger(BaseTest.class);
+    protected static final Logger logger = LogManager.getLogger(BaseTest.class);
 
     @BeforeMethod
     public void setUpAndLogin() {

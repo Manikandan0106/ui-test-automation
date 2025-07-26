@@ -20,6 +20,7 @@ public class ConfigBaseClass {
     public static final String INFLUX_USERNAME;
     public static final String INFLUX_PASSWORD;
     public static final String ENV_FILE;
+    public static final int RETRY_COUNT;
     
     static {
         // Load local.properties first
@@ -48,6 +49,17 @@ public class ConfigBaseClass {
         INFLUX_USERNAME = getValueWithPriority("INFLUX_USERNAME", null);
         INFLUX_PASSWORD = getValueWithPriority("INFLUX_PASSWORD", null);
         ENV_FILE = envFile;
+        
+        // Parse RETRY_COUNT as integer
+        String retryCountStr = getValueWithPriority("RETRY_COUNT", "2");
+        int retryCount;
+        try {
+            retryCount = Integer.parseInt(retryCountStr.trim());
+        } catch (NumberFormatException e) {
+            // Default to 2 if parsing fails
+            retryCount = 2;
+        }
+        RETRY_COUNT = retryCount;
     }
     
     /**
