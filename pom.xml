@@ -8,6 +8,16 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <!-- Jenkins/CLI should set suiteName (e.g., suite-cart); pom.xml will resolve full path -->
+        <suiteName>suite-cart</suiteName>
+        <suiteXmlFile>suites/${suiteName}.xml</suiteXmlFile>
+        <env>dev</env>
+        <BROWSER>chrome</BROWSER>
+        <PASSWORD>secret_sauce</PASSWORD>
+        <RETRY_COUNT>2</RETRY_COUNT>
+        <JIRA_TOKEN>your-jira-token</JIRA_TOKEN>
+        <JIRA_EXECUTION_ID>JIRA-EXEC-123</JIRA_EXECUTION_ID>
+        <INFLUX_PASSWORD>testpass</INFLUX_PASSWORD>
     </properties>
     <dependencies>
         <!-- Selenium Java -->
@@ -69,8 +79,17 @@
                 <version>3.2.5</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                     </suiteXmlFiles>
+                    <systemPropertyVariables>
+                        <env>${env}</env>
+                        <BROWSER>${BROWSER}</BROWSER>
+                        <PASSWORD>${PASSWORD}</PASSWORD>
+                        <RETRY_COUNT>${RETRY_COUNT}</RETRY_COUNT>
+                        <JIRA_TOKEN>${JIRA_TOKEN}</JIRA_TOKEN>
+                        <JIRA_EXECUTION_ID>${JIRA_EXECUTION_ID}</JIRA_EXECUTION_ID>
+                        <INFLUX_PASSWORD>${INFLUX_PASSWORD}</INFLUX_PASSWORD>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
