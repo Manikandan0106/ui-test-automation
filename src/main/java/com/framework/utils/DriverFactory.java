@@ -11,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import com.framework.utils.ConfigBaseClass;
 
 public class DriverFactory {
     private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
@@ -18,7 +19,7 @@ public class DriverFactory {
 
     public static WebDriver getDriver() {
         if (driver.get() == null) {
-            String browser = CommandLineReader.BROWSER;
+            String browser = ConfigBaseClass.BROWSER;
             switch (browser.toLowerCase()) {
                 case "chrome": {
                     ChromeOptions chromeOptions = new ChromeOptions();

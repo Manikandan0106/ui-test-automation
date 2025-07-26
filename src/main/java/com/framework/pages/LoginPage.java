@@ -31,4 +31,17 @@ public class LoginPage extends BasePage {
         clickLogin();
         logger.info("Login process completed");
     }
+    
+    // Getter methods for locators (for testing purposes)
+    public By getUsernameField() {
+        return usernameField;
+    }
+    
+    public By getPasswordField() {
+        return passwordField;
+    }
+    
+    public By getLoginButton() {
+        return loginButton;
+    }
 } 

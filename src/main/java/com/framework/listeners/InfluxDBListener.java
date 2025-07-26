@@ -7,6 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import com.framework.utils.ConfigBaseClass;
 
 public class InfluxDBListener implements ITestListener, ISuiteListener {
 
@@ -14,11 +15,18 @@ public class InfluxDBListener implements ITestListener, ISuiteListener {
     private int failedCount = 0;
     private int skippedCount = 0;
 
-    private static final String INFLUX_URL = "http://localhost:8086/write?db=testmetrics";
-    private static final String USERNAME = "testuser";
-    private static final String PASSWORD = "testpass";
+    private static final String INFLUX_URL = ConfigBaseClass.INFLUX_URL;
+    private static final String USERNAME = ConfigBaseClass.INFLUX_USERNAME;
+    private static final String PASSWORD = ConfigBaseClass.INFLUX_PASSWORD;
+    private static final org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager.getLogger(InfluxDBListener.class);
 
     private static void sendToInflux(String body) {
+        // Skip if InfluxDB is not configured
+        if (INFLUX_URL == null || INFLUX_URL.isEmpty() || INFLUX_URL.contains("localhost")) {
+            logger.info("InfluxDB not configured or running locally, skipping metrics upload");
+            return;
+        }
+        
         try {
             String encodedAuth = Base64.getEncoder()
                     .encodeToString((USERNAME + ":" + PASSWORD).getBytes(StandardCharsets.UTF_8));
@@ -30,8 +38,9 @@ public class InfluxDBListener implements ITestListener, ISuiteListener {
                     .build();
 
             HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            logger.info("Successfully sent metrics to InfluxDB");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to send data to InfluxDB (non-blocking): " + e.getMessage());
         }
     }
 
@@ -55,8 +64,8 @@ public class InfluxDBListener implements ITestListener, ISuiteListener {
         int total = passedCount + failedCount + skippedCount;
 
         // Read Jenkins build & environment info
-        String buildId = System.getenv("BUILD_ID") != null ? System.getenv("BUILD_ID") : "local";
-        String env = System.getProperty("env", "qa");
+        String buildId = ConfigBaseClass.getEnv("BUILD_ID") != null ? ConfigBaseClass.getEnv("BUILD_ID") : "local";
+        String env = ConfigBaseClass.getConfig("env") != null ? ConfigBaseClass.getConfig("env") : "qa";
 
         String data = String.format(
             "suite_summary,suite=%s,env=%s,build=%s total=%d,passed=%d,failed=%d,skipped=%d",

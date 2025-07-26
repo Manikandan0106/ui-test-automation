@@ -6,7 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 
 import com.framework.pages.LoginPage;
-import com.framework.utils.ConfigReader;
+import com.framework.utils.ConfigBaseClass;
 import com.framework.utils.DriverFactory;
 
 import io.qameta.allure.testng.AllureTestNg;
@@ -20,8 +20,8 @@ public class BaseTest {
     @BeforeMethod
     public void setUpAndLogin() {
         driver = DriverFactory.getDriver();
-        driver.get(ConfigReader.get("URL"));
-        new LoginPage().login(ConfigReader.get("USERNAME"), ConfigReader.get("PASSWORD"));
+        driver.get(ConfigBaseClass.URL);
+        new LoginPage().login(ConfigBaseClass.USERNAME, ConfigBaseClass.PASSWORD);
     }
 
     @AfterMethod(alwaysRun = true)

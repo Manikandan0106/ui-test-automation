@@ -1,5 +1,6 @@
 package com.framework.tests;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -12,23 +13,28 @@ import io.qameta.allure.testng.AllureTestNg;
 
 @Epic("Cart Item Epic")
 public class CartWorkflowRemoveTest extends BaseTest {
+    private CartWorkflowPage cartPage;
 
-	@Test
-	@Description("JIRA-123:Test cart remove workflow functionality")
-	public void testCartWorkflow() throws InterruptedException {
-		CartWorkflowPage cartPage = new CartWorkflowPage();
-		Allure.step("Navigate to shopping cart", () -> {
-			cartPage.goToCart();
-		});
+    @BeforeMethod
+    public void setUpCartPage() {
+        cartPage = new CartWorkflowPage();
+    }
 
-		Allure.step("""
+    @Test
+    @Description("JIRA-123:Test cart remove workflow functionality")
+    public void testCartWorkflow() throws InterruptedException {
+        Allure.step("Navigate to shopping cart", () -> {
+            cartPage.goToCart();
+        });
+
+        Allure.step("""
 				Click on Remove
 				         Expected: Cart item removed""", () -> {
 //			cartPage.clickRemove();
 		});
 
-		Allure.step(" Click on Continue Shoping", () -> {
-			cartPage.clickContinueShopping();
-		});
-	}
+        Allure.step(" Click on Continue Shoping", () -> {
+            cartPage.clickContinueShopping();
+        });
+    }
 }

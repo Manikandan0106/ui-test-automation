@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class JiraUtil {
-    private static final String JIRA_URL = System.getenv("JIRA_URL");
-    private static final String JIRA_EMAIL = System.getenv("JIRA_EMAIL");
-    private static final String JIRA_TOKEN = System.getenv("JIRA_TOKEN");
+    private static final String JIRA_URL = ConfigBaseClass.JIRA_URL;
+    private static final String JIRA_EMAIL = ConfigBaseClass.JIRA_EMAIL;
+    private static final String JIRA_TOKEN = ConfigBaseClass.JIRA_TOKEN;
 
     public static void updateTestExecutionSet(String testExecutionId, String testCaseKey, String status, String comment) {
         if (JIRA_URL == null || JIRA_EMAIL == null || JIRA_TOKEN == null) {

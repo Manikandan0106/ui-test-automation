@@ -3,14 +3,14 @@ package com.framework.pages;
 import org.openqa.selenium.By;
 
 public class CartWorkflowPage extends BasePage {
-    // Locators
-    private final By backpackLink = By.linkText("Sauce Labs Backpack");
-    private final By addToCartButton = By.xpath("//button[text()='ADD TO CART']");
-    private final By cartIcon = By.xpath("//a[contains(@class,'shopping_cart_link')]");
-    private final By checkoutLink = By.xpath("//a[text()='CHECKOUT']");
-    private final By cancelLink = By.xpath("//a[text()='CANCEL']");
-    private final By removeButton = By.xpath("//button[text()='REMOVE']");
-    private final By continueShoppingLink = By.xpath("//a[@class='btn_secondary']");
+    // Locators - Updated based on actual HTML structure
+    private final By backpackLink = By.id("item_4_title_link");
+    private final By addToCartButton = By.cssSelector(".btn_primary.btn_inventory");
+    private final By cartIcon = By.cssSelector(".shopping_cart_link");
+    private final By checkoutLink = By.cssSelector(".btn_action.checkout_button");
+    private final By cancelLink = By.cssSelector(".btn_secondary.cart_cancel_link");
+    private final By removeButton = By.cssSelector(".btn_secondary.btn_inventory");
+    private final By continueShoppingLink = By.cssSelector(".btn_secondary");
 
     public CartWorkflowPage() {
         super();

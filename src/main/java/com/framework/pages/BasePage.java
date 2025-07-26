@@ -94,7 +94,7 @@ public class BasePage {
         throw new RuntimeException("Failed to get text after retry: " + elementName);
     }
 
-    protected boolean isElementDisplayed(By locator, String elementName) {
+    public boolean isElementDisplayed(By locator, String elementName) {
         int attempts = 0;
         while (attempts < 2) {
             try {
