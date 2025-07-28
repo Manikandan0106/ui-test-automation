@@ -8,6 +8,9 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import com.framework.utils.ConfigBaseClass;
+import com.framework.utils.HttpUtil;
+import java.util.HashMap;
+import java.util.Map;
 
 public class InfluxDBListener implements ITestListener, ISuiteListener {
 
@@ -26,19 +29,22 @@ public class InfluxDBListener implements ITestListener, ISuiteListener {
             logger.info("InfluxDB not configured or running locally, skipping metrics upload");
             return;
         }
-        
         try {
-            String encodedAuth = Base64.getEncoder()
-                    .encodeToString((USERNAME + ":" + PASSWORD).getBytes(StandardCharsets.UTF_8));
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(INFLUX_URL))
-                    .header("Authorization", "Basic " + encodedAuth)
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
-
-            HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            logger.info("Successfully sent metrics to InfluxDB");
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "text/plain");
+            boolean success = HttpUtil.sendAuthenticatedRequest(
+                INFLUX_URL,
+                "POST",
+                body,
+                headers,
+                USERNAME,
+                PASSWORD
+            );
+            if (success) {
+                logger.info("Successfully sent metrics to InfluxDB");
+            } else {
+                logger.warn("Failed to send metrics to InfluxDB");
+            }
         } catch (Exception e) {
             logger.warn("Failed to send data to InfluxDB (non-blocking): " + e.getMessage());
         }
