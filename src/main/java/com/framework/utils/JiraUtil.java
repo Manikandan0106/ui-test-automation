@@ -6,15 +6,18 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class JiraUtil {
+    private static final Logger logger = LogManager.getLogger(JiraUtil.class);
     private static final String JIRA_URL = ConfigBaseClass.JIRA_URL;
     private static final String JIRA_EMAIL = ConfigBaseClass.JIRA_EMAIL;
     private static final String JIRA_TOKEN = ConfigBaseClass.JIRA_TOKEN;
 
     public static void updateTestExecutionSet(String testExecutionId, String testCaseKey, String status, String comment) {
         if (JIRA_URL == null || JIRA_EMAIL == null || JIRA_TOKEN == null) {
-            System.err.println("Jira credentials or URL not set in environment variables.");
+            logger.info("Jira credentials or URL not set in environment variables. Skipping Jira update.");
             return;
         }
         try {
@@ -31,7 +34,7 @@ public class JiraUtil {
                     .bodyString(body.toString(), ContentType.APPLICATION_JSON)
                     .execute();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to update Jira test execution: " + e.getMessage(), e);
         }
     }
 } 

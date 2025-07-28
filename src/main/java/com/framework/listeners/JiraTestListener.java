@@ -5,8 +5,11 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import com.framework.utils.JiraUtil;
 import com.framework.utils.ConfigBaseClass;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class JiraTestListener implements ITestListener {
+    private static final Logger logger = LogManager.getLogger(JiraTestListener.class);
     private static final String testExecutionId = ConfigBaseClass.getConfig("JIRA_EXECUTION_ID");
 
     @Override
@@ -25,6 +28,11 @@ public class JiraTestListener implements ITestListener {
     }
 
     private void updateJira(ITestResult result, String status) {
+        // Check for Jira credentials
+        if (ConfigBaseClass.JIRA_URL == null || ConfigBaseClass.JIRA_EMAIL == null || ConfigBaseClass.JIRA_TOKEN == null) {
+            logger.info("Jira credentials or URL not set, skipping Jira update.");
+            return;
+        }
         Description description = result.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Description.class);
         if (description != null && description.value().startsWith("JIRA-")) {
             String jiraKey = description.value().split(":")[0];
