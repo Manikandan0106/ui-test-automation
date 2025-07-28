@@ -9,7 +9,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <!-- Jenkins/CLI should set suiteName (e.g., suite-cart); pom.xml will resolve full path -->
-        <suiteName>suite-cart</suiteName>
+        <suiteName>suite-all-cases</suiteName>
         <suiteXmlFile>suites/${suiteName}.xml</suiteXmlFile>
         <env>dev</env>
         <BROWSER>chrome</BROWSER>
