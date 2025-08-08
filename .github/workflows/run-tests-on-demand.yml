@@ -1,0 +1,136 @@
+name: Run UI Tests On Demand
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'suite-all-cases'
+        type: choice
+        options:
+        - suite-all-cases
+        - suite-cart
+        - suite-simple-retry
+
+jobs:
+  run-ui-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: Set up virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          export DISPLAY=:99
+          Xvfb :99 -screen 0 1920x1080x24 &
+
+      - name: Display test configuration
+        run: |
+          echo "🚀 UI Test Automation - On Demand Run"
+          echo "====================================="
+          echo "Test Suite: ${{ github.event.inputs.suite || 'suite-all-cases' }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "====================================="
+
+      - name: Run UI tests
+        env:
+          DISPLAY: ':99'
+        run: |
+          echo "Starting test execution..."
+          
+          SUITE="${{ github.event.inputs.suite || 'suite-all-cases' }}"
+          
+          mvn clean test \
+            -DsuiteXmlFile=suites/${SUITE}.xml \
+            -DBROWSER=chrome \
+            -Dmaven.test.failure.ignore=true
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          echo "Generating Allure report..."
+          mvn allure:report -Dmaven.test.skip=true || echo "Allure report generation failed"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.event.inputs.suite || 'all-cases' }}-${{ github.run_number }}
+          path: |
+            target/surefire-reports/
+            allure-results/
+            target/site/allure-maven-plugin/
+            logs/
+          retention-days: 30
+
+      - name: Create test summary
+        if: always()
+        run: |
+          echo "## 🧪 UI Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Test Configuration:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Suite: ${{ github.event.inputs.suite || 'suite-all-cases' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Browser: Chrome" >> $GITHUB_STEP_SUMMARY
+          echo "- Triggered by: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Run Number: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Check for test results
+          if [ -f "target/surefire-reports/testng-results.xml" ]; then
+            echo "**Test Results:**" >> $GITHUB_STEP_SUMMARY
+            
+            # Extract test counts (basic parsing)
+            total=$(grep -o 'total="[0-9]*"' target/surefire-reports/testng-results.xml | grep -o '[0-9]*' || echo "0")
+            passed=$(grep -o 'passed="[0-9]*"' target/surefire-reports/testng-results.xml | grep -o '[0-9]*' || echo "0")
+            failed=$(grep -o 'failed="[0-9]*"' target/surefire-reports/testng-results.xml | grep -o '[0-9]*' || echo "0")
+            skipped=$(grep -o 'skipped="[0-9]*"' target/surefire-reports/testng-results.xml | grep -o '[0-9]*' || echo "0")
+            
+            echo "- 📊 Total Tests: $total" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Passed: $passed" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Failed: $failed" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏭️ Skipped: $skipped" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "$failed" -eq 0 ]; then
+              echo "- 🎉 **All tests passed!**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- ⚠️ **Some tests failed - check artifacts for details**" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "- ❌ No test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Artifacts:**" >> $GITHUB_STEP_SUMMARY
+          echo "- 📁 Test results and reports are available in the artifacts section below" >> $GITHUB_STEP_SUMMARY
+
+      - name: Job completion status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ UI tests completed successfully!"
+          else
+            echo "❌ UI tests completed with issues. Check the logs and artifacts for details."
+          fi
