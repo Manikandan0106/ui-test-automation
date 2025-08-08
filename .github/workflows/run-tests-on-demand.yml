@@ -17,6 +17,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 jobs:
   run-ui-tests:
@@ -88,14 +89,20 @@ jobs:
             echo "❌ Allure report generation failed"
           fi
 
+      - name: Setup Pages
+        if: always()
+        uses: actions/configure-pages@v4
+
       - name: Deploy Allure report to GitHub Pages
         if: always()
-        uses: peaceiris/actions-gh-pages@v3
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-report
-          destination_dir: reports/run-${{ github.run_number }}
-          keep_files: true
+          path: allure-report
+
+      - name: Deploy to GitHub Pages
+        if: always()
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Upload test results
         if: always()
@@ -148,7 +155,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Artifacts & Reports:**" >> $GITHUB_STEP_SUMMARY
           echo "- 📁 Test results and reports are available in the artifacts section below" >> $GITHUB_STEP_SUMMARY
-          echo "- 🌐 **[View Allure Report Online](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/run-${{ github.run_number }})**" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 **[View Allure Report Online](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }})**" >> $GITHUB_STEP_SUMMARY
           echo "- 📊 Interactive test results with detailed analysis" >> $GITHUB_STEP_SUMMARY
 
       - name: Job completion status
